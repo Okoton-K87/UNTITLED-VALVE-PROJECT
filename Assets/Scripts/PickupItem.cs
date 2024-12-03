@@ -62,10 +62,18 @@ public class PickupItem : MonoBehaviour
         if (isInRange && Input.GetKeyDown(KeyCode.F))
         {
             Debug.Log($"Player picked up {itemName}.");
-            InventorySystem.Instance.AddItem(itemName);
-            Destroy(gameObject); // Destroy item after pickup
-            Debug.Log($"{itemName} removed from scene.");
 
+            // Add the item to the inventory system
+            InventorySystem.Instance.AddItem(itemName);
+
+            // Hide the pickup message
+            if (pickupMessage != null)
+            {
+                pickupMessage.gameObject.SetActive(false);
+                Debug.Log("Pickup message hidden after pickup.");
+            }
+
+            // Handle specific actions for the M1A1 gun
             if (this.name == "M1A1_thompson")
             {
                 // Find the button by name or reference it in the Inspector
@@ -81,7 +89,10 @@ public class PickupItem : MonoBehaviour
                     Debug.LogWarning("GunOneButton not found in InventoryPanel.");
                 }
             }
+
+            // Destroy the item after pickup
+            Destroy(gameObject);
+            Debug.Log($"{itemName} removed from scene.");
         }
     }
-
 }
