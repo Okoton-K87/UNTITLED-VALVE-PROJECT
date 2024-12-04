@@ -45,7 +45,7 @@ public class InventoryManager : MonoBehaviour
         // Handle item pickup
         if (itemInPickupRange != null && Input.GetKeyDown(KeyCode.F))
         {
-            Debug.Log($"Picking up item: {itemInPickupRange.itemName}");
+            //Debug.Log($"Picking up item: {itemInPickupRange.itemName}");
             AddItem(itemInPickupRange);
             Destroy(itemInPickupRange.gameObject); // Remove item from scene
             ClearItemInRange();
@@ -85,8 +85,10 @@ public class InventoryManager : MonoBehaviour
 
         // Destroy the item in the world
         Destroy(item.gameObject);
-    }
 
+        // Log current inventory
+        LogInventoryContents();
+    }
 
     public void DropItem(GameObject itemPrefab, GameObject button)
     {
@@ -113,6 +115,31 @@ public class InventoryManager : MonoBehaviour
         {
             droppedItemScript.prefabReference = itemPrefab;
             Debug.Log($"Set prefab reference for dropped item: {droppedItemScript.itemName}");
+
+            // Flag for successful removal
+            bool itemRemoved = false;
+
+            // Locate and remove the first matching item from the inventory by name
+            for (int i = 0; i < inventoryItems.Count; i++)
+            {
+                if (inventoryItems[i].itemName == droppedItemScript.itemName)
+                {
+                    Debug.Log($"Removing item: {inventoryItems[i].itemName}");
+                    inventoryItems.RemoveAt(i);
+                    itemRemoved = true;
+                    break; // Stop after removing the first match
+                }
+            }
+
+            // Check if the item was removed
+            if (itemRemoved)
+            {
+                Debug.Log($"{droppedItemScript.itemName} successfully removed from inventory.");
+            }
+            else
+            {
+                Debug.LogWarning($"Failed to remove item: {droppedItemScript.itemName} (not found in inventory).");
+            }
         }
         else
         {
@@ -123,8 +150,10 @@ public class InventoryManager : MonoBehaviour
         Destroy(button);
 
         Debug.Log($"Dropped item at {dropPosition}");
-    }
 
+        // Log current inventory
+        LogInventoryContents();
+    }
 
     public void SetItemInRange(Item item)
     {
@@ -135,7 +164,7 @@ public class InventoryManager : MonoBehaviour
         {
             pickupMessage.gameObject.SetActive(true);
             pickupMessage.text = $"Press F to pick up {item.itemName}";
-            Debug.Log($"Pickup message displayed for item: {item.itemName}");
+            //Debug.Log($"Pickup message displayed for item: {item.itemName}");
         }
     }
 
@@ -147,7 +176,22 @@ public class InventoryManager : MonoBehaviour
         if (pickupMessage != null)
         {
             pickupMessage.gameObject.SetActive(false);
-            Debug.Log("Pickup message hidden.");
+            //Debug.Log("Pickup message hidden.");
         }
     }
+    public void LogInventoryContents()
+    {
+        Debug.Log("Current Inventory:");
+        if (inventoryItems.Count == 0)
+        {
+            Debug.Log("Inventory is empty.");
+            return;
+        }
+
+        foreach (var item in inventoryItems)
+        {
+            Debug.Log($"- {item.itemName}");
+        }
+    }
+
 }

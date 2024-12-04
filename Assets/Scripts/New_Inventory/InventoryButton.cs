@@ -12,7 +12,7 @@ public class InventoryButton : MonoBehaviour
     {
         // Set the item's name on the button
         itemNameText.text = itemName;
-        Debug.Log($"Setting button name to: {itemName}");
+        //Debug.Log($"Setting button name to: {itemName}");
 
         if (itemIconSprite != null)
         {
@@ -20,17 +20,17 @@ public class InventoryButton : MonoBehaviour
             itemIcon.sprite = itemIconSprite;
             itemIcon.color = Color.white; // Ensure the color is visible
             itemIcon.gameObject.SetActive(true); // Activate the icon
-            Debug.Log($"Setting button icon for: {itemName}, Icon: {itemIconSprite.name}");
+            //Debug.Log($"Setting button icon for: {itemName}, Icon: {itemIconSprite.name}");
         }
         else
         {
             // If no icon is provided, hide the icon
             itemIcon.gameObject.SetActive(false);
-            Debug.LogWarning($"No icon assigned for item: {itemName}");
+            //Debug.LogWarning($"No icon assigned for item: {itemName}");
         }
 
         // Debugging logs
-        Debug.Log($"Icon GameObject Active: {itemIcon.gameObject.activeSelf}");
+        //Debug.Log($"Icon GameObject Active: {itemIcon.gameObject.activeSelf}");
     }
 
 

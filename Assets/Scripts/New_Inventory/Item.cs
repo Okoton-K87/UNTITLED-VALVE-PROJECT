@@ -19,7 +19,7 @@ public class Item : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log($"Player entered trigger zone for item: {itemName}");
+            //Debug.Log($"Player entered trigger zone for item: {itemName}");
             InventoryManager.Instance.SetItemInRange(this); // Notify InventoryManager
         }
     }
@@ -28,7 +28,7 @@ public class Item : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            Debug.Log($"Player exited trigger zone for item: {itemName}");
+            //Debug.Log($"Player exited trigger zone for item: {itemName}");
             InventoryManager.Instance.ClearItemInRange(); // Notify InventoryManager
         }
     }
