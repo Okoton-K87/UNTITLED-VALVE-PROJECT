@@ -10,7 +10,10 @@ public class GunController : MonoBehaviour
     public float fireRate = 0.1f; // Time between shots
     public int bulletDamage = 20; // Damage per bullet
     public float spreadRange = 0.05f; // Spread range for hip-fire
+
+    [Header("UI References")]
     public TextMeshProUGUI gunMessage; // UI message for player
+    public TextMeshProUGUI ammoText; // Ammo count display
 
     [Header("References")]
     public Transform firePoint; // Where the raycast starts
@@ -20,23 +23,30 @@ public class GunController : MonoBehaviour
     private bool isUsingGun = false; // Is the gun active
     private bool isAiming = false; // Is the player in ADS mode
     private float nextFireTime = 0f; // Time until the next shot
+    private float messageTimer = 0f; // Timer for hiding messages
+    private bool isReloading = false; // Is the player reloading
 
     private void Start()
     {
-        // Initialize ammo and hide the gun models
         currentAmmo = maxAmmo;
         hipFireGun.SetActive(false);
         adsGun.SetActive(false);
+        UpdateAmmoUI();
     }
 
     private void Update()
     {
+        HandleMessageTimer();
+
         if (InventoryManager.Instance.InventoryContains("M1A1"))
         {
-            gunMessage.text = "Press 1 to use the Gun.";
-            gunMessage.gameObject.SetActive(true);
+            if (!isUsingGun)
+            {
+                gunMessage.text = "Press 1 to use the Gun.";
+                gunMessage.gameObject.SetActive(true);
+            }
 
-            if (Input.GetKeyDown(KeyCode.Alpha1))
+            if (Input.GetKeyDown(KeyCode.Alpha1) && !isReloading)
             {
                 ToggleGun();
             }
@@ -59,7 +69,11 @@ public class GunController : MonoBehaviour
         isUsingGun = !isUsingGun;
         hipFireGun.SetActive(isUsingGun && !isAiming);
         adsGun.SetActive(isUsingGun && isAiming);
-        gunMessage.text = isUsingGun ? "Press 1 to disable the Gun." : "Press 1 to use the Gun.";
+
+        if (isUsingGun)
+        {
+            gunMessage.gameObject.SetActive(false); // Hide the message when the gun is active
+        }
     }
 
     private void HandleADS()
@@ -87,9 +101,11 @@ public class GunController : MonoBehaviour
                 Shoot();
                 nextFireTime = Time.time + fireRate;
             }
-            else
+            else if (!isReloading)
             {
                 gunMessage.text = "Out of ammo! Press R to reload.";
+                gunMessage.gameObject.SetActive(true);
+                messageTimer = 3f; // Hide after 3 seconds
             }
         }
     }
@@ -97,9 +113,10 @@ public class GunController : MonoBehaviour
     private void Shoot()
     {
         currentAmmo--;
+        UpdateAmmoUI();
 
         Vector3 shootDirection = playerCamera.transform.forward;
-        if (!isAiming) // Apply spread for hip-fire
+        if (!isAiming)
         {
             shootDirection += new Vector3(
                 Random.Range(-spreadRange, spreadRange),
@@ -111,30 +128,73 @@ public class GunController : MonoBehaviour
         if (Physics.Raycast(firePoint.position, shootDirection, out RaycastHit hit, 100f))
         {
             Debug.Log($"Hit {hit.collider.name}");
-            // Apply damage if the hit object has a health component
+
+            // Damage the enemy
             var health = hit.collider.GetComponent<HealthComponent>();
             if (health != null)
             {
                 health.TakeDamage(bulletDamage);
             }
+
+            // Add a bullet tracer
+            Debug.DrawLine(firePoint.position, hit.point, Color.red, 0.1f);
         }
     }
 
     private void HandleReload()
     {
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) && !isReloading)
         {
             if (InventoryManager.Instance.InventoryContains("M1A1_mag"))
             {
-                InventoryManager.Instance.RemoveItemByName("M1A1_mag");
-                currentAmmo = maxAmmo;
-                gunMessage.text = "Reloaded!";
-                Debug.Log("Reloaded!");
+                isReloading = true;
+                gunMessage.text = "Reloading...";
+                gunMessage.gameObject.SetActive(true);
+
+                // Update message timer for reload
+                StartCoroutine(ReloadTimer());
             }
             else
             {
                 gunMessage.text = "No magazines left!";
-                Debug.Log("No magazines left!");
+                gunMessage.gameObject.SetActive(true);
+                messageTimer = 3f; // Hide after 3 seconds
+            }
+        }
+    }
+
+    private System.Collections.IEnumerator ReloadTimer()
+    {
+        float reloadTime = 2f;
+        while (reloadTime > 0)
+        {
+            gunMessage.text = $"Reloading... {reloadTime:F1}s";
+            yield return new WaitForSeconds(0.1f);
+            reloadTime -= 0.1f;
+        }
+
+        InventoryManager.Instance.RemoveItemByName("M1A1_mag");
+        currentAmmo = maxAmmo;
+        UpdateAmmoUI();
+
+        gunMessage.text = "Reloaded!";
+        messageTimer = 3f; // Hide after 3 seconds
+        isReloading = false;
+    }
+
+    private void UpdateAmmoUI()
+    {
+        ammoText.text = $"Ammo: {currentAmmo}/{maxAmmo}";
+    }
+
+    private void HandleMessageTimer()
+    {
+        if (messageTimer > 0)
+        {
+            messageTimer -= Time.deltaTime;
+            if (messageTimer <= 0)
+            {
+                gunMessage.gameObject.SetActive(false);
             }
         }
     }
