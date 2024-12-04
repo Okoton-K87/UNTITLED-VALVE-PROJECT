@@ -4,6 +4,16 @@ public class Item : MonoBehaviour
 {
     public string itemName; // Name of the item
     public Sprite itemIcon; // Icon to display in the inventory
+    public GameObject prefabReference;
+
+    private void Awake()
+    {
+        // If prefabReference is not already set, set it to this instance's prefab
+        if (prefabReference == null)
+        {
+            prefabReference = gameObject; // Assign the prefab reference
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {

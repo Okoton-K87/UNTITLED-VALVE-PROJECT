@@ -14,6 +14,9 @@ public class InventoryManager : MonoBehaviour
     [Header("Prefabs")]
     public GameObject inventoryButtonPrefab; // Button prefab for inventory items
 
+    [Header("Player Reference")]
+    public Transform playerTransform; // Reference to the player's transform
+
     private List<Item> inventoryItems = new List<Item>(); // List of items in the inventory
     private Item itemInPickupRange; // The item currently in pickup range
 
@@ -48,11 +51,13 @@ public class InventoryManager : MonoBehaviour
             ClearItemInRange();
         }
     }
-
     public void AddItem(Item item)
     {
         inventoryItems.Add(item);
         Debug.Log($"{item.itemName} added to inventory.");
+
+        // Store prefab reference before destroying the item
+        GameObject itemPrefab = item.prefabReference;
 
         // Create a button in the inventory panel
         GameObject button = Instantiate(inventoryButtonPrefab, inventoryButtonParent);
@@ -75,23 +80,51 @@ public class InventoryManager : MonoBehaviour
         // Add drop functionality to the button
         button.GetComponent<UnityEngine.UI.Button>().onClick.AddListener(() =>
         {
-            DropItem(item, button);
+            DropItem(itemPrefab, button);
         });
+
+        // Destroy the item in the world
+        Destroy(item.gameObject);
     }
 
 
-    public void DropItem(Item item, GameObject button)
+    public void DropItem(GameObject itemPrefab, GameObject button)
     {
-        inventoryItems.Remove(item);
+        if (itemPrefab == null)
+        {
+            Debug.LogWarning("No prefab reference found for the item!");
+            return;
+        }
+
+        // Ensure we have a valid playerTransform
+        if (playerTransform == null)
+        {
+            Debug.LogError("Player transform not assigned to InventoryManager!");
+            return;
+        }
 
         // Instantiate the item in front of the player
-        Vector3 dropPosition = transform.position + transform.forward * 2f;
-        Instantiate(item.gameObject, dropPosition, Quaternion.identity);
+        Vector3 dropPosition = playerTransform.position + playerTransform.forward * 2f + Vector3.up * 1f; // Offset in front of the player
+        GameObject droppedItem = Instantiate(itemPrefab, dropPosition, Quaternion.identity);
+
+        // Ensure the prefabReference is set on the newly instantiated item
+        Item droppedItemScript = droppedItem.GetComponent<Item>();
+        if (droppedItemScript != null)
+        {
+            droppedItemScript.prefabReference = itemPrefab;
+            Debug.Log($"Set prefab reference for dropped item: {droppedItemScript.itemName}");
+        }
+        else
+        {
+            Debug.LogWarning("Dropped item does not have an Item script!");
+        }
 
         // Remove the button from the inventory UI
         Destroy(button);
-        Debug.Log($"{item.itemName} dropped at {dropPosition}");
+
+        Debug.Log($"Dropped item at {dropPosition}");
     }
+
 
     public void SetItemInRange(Item item)
     {
