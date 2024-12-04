@@ -195,7 +195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   itemName: M1A1
-  itemIcon: {fileID: 21300000, guid: aa542dc0b1ae27e4eb66e130d00df782, type: 3}
+  itemIcon: {fileID: 21300000, guid: eb9acfb854e5e1147b73fc2369d5dde5, type: 3}
   prefabReference: {fileID: 1476355610707157451}
 --- !u!1 &4125552106273154802 stripped
 GameObject:
