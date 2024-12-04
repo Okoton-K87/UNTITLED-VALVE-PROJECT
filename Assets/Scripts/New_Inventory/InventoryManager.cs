@@ -194,4 +194,48 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
+    // Check if inventory contains an item by name
+    public bool InventoryContains(string itemName)
+    {
+        foreach (var item in inventoryItems)
+        {
+            if (item.itemName == itemName)
+            {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Remove an item from inventory by name
+    public void RemoveItemByName(string itemName)
+    {
+        for (int i = 0; i < inventoryItems.Count; i++)
+        {
+            if (inventoryItems[i].itemName == itemName)
+            {
+                // Remove the item from the inventory list
+                inventoryItems.RemoveAt(i);
+
+                // Find and remove the corresponding button in the inventory UI
+                foreach (Transform button in inventoryButtonParent)
+                {
+                    InventoryButton buttonScript = button.GetComponent<InventoryButton>();
+                    if (buttonScript != null && buttonScript.itemName == itemName)
+                    {
+                        Destroy(button.gameObject);
+                        Debug.Log($"Removed button for {itemName} from inventory UI.");
+                        break;
+                    }
+                }
+
+                Debug.Log($"Removed {itemName} from inventory.");
+                LogInventoryContents();
+                return;
+            }
+        }
+
+        Debug.LogWarning($"Item {itemName} not found in inventory.");
+    }
+
 }
