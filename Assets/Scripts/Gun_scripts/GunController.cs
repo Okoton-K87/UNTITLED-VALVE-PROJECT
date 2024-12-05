@@ -29,7 +29,8 @@ public class GunController : MonoBehaviour
     private float nextFireTime = 0f; // Time until the next shot
     private float messageTimer = 0f; // Timer for hiding messages
     private bool isReloading = false; // Is the player reloading
-    public ParticleSystem muzzleFlash;
+    public ParticleSystem muzzleFlash_HIP;
+    public ParticleSystem muzzleFlash_ADS;
 
     private void Start()
     {
@@ -74,7 +75,7 @@ public class GunController : MonoBehaviour
             HandleADS();
             HandleShooting();
             HandleReload();
-            muzzleFlash.Play();
+            //muzzleFlash.Play();
         }
     }
 
@@ -133,10 +134,12 @@ public class GunController : MonoBehaviour
 
     private void Shoot()
     {
-        muzzleFlash.Play();
+        muzzleFlash_HIP.Play();
+        muzzleFlash_ADS.Play();
         Debug.Log("SHOTS");
         currentAmmo--;
         UpdateAmmoUI();
+        //muzzleFlash.Stop();
 
         if (gunshotsound != null)
         {
