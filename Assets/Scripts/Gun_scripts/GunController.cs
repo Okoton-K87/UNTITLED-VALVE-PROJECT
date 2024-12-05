@@ -197,7 +197,7 @@ public class GunController : MonoBehaviour
 
     private void UpdateAmmoUI()
     {
-        ammoText.text = $"Ammo: {currentAmmo}/{maxAmmo}";
+        ammoText.text = $"{currentAmmo}/{maxAmmo}";
     }
 
     private void HandleMessageTimer()
