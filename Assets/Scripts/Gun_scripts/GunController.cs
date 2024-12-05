@@ -19,10 +19,6 @@ public class GunController : MonoBehaviour
     public Transform firePoint; // Where the raycast starts
     public Camera playerCamera; // Reference to the player's camera
 
-    [Header("GunAudio")]
-    public AudioSource gunshotsound;
-    public AudioSource reloadsound;
-
     private int currentAmmo; // Current ammo in the magazine
     private bool isUsingGun = false; // Is the gun active
     private bool isAiming = false; // Is the player in ADS mode
@@ -132,11 +128,6 @@ public class GunController : MonoBehaviour
         currentAmmo--;
         UpdateAmmoUI();
 
-        if (gunshotsound != null)
-        {
-            gunshotsound.Play();
-        }
-
         Vector3 shootDirection = playerCamera.transform.forward;
         if (!isAiming)
         {
@@ -198,11 +189,6 @@ public class GunController : MonoBehaviour
         InventoryManager.Instance.RemoveItemByName("M1A1_mag");
         currentAmmo = maxAmmo;
         UpdateAmmoUI();
-
-        if (reloadsound != null)
-        {
-            reloadsound.Play();
-        }
 
         gunMessage.text = "Reloaded!";
         messageTimer = 3f; // Hide after 3 seconds
