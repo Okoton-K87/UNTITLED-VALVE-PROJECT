@@ -6957,6 +6957,7 @@ CanvasRenderer:
   m_CullTransparentMesh: 1
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
 --- !u!1 &653456772
 GameObject:
@@ -7086,6 +7087,8 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+=======
+>>>>>>> parent of f214a40 (gunshot and reload sounds)
 =======
 >>>>>>> parent of f214a40 (gunshot and reload sounds)
 --- !u!1 &656791016
