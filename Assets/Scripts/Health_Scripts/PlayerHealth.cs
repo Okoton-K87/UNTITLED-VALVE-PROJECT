@@ -1,14 +1,21 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class PlayerHealth : MonoBehaviour
 {
     public int maxHealth = 100;
-    private int currentHealth;
+    public int currentHealth = 100;
+    public Slider slider;
 
     private void Start()
     {
         currentHealth = maxHealth;
+        
+    }
+    private void Update()
+    {
+        slider.value = currentHealth;
     }
 
     public void TakeDamage(int damage)
@@ -20,6 +27,7 @@ public class PlayerHealth : MonoBehaviour
         {
             Die();
         }
+        
     }
 
     private void Die()
@@ -33,4 +41,8 @@ public class PlayerHealth : MonoBehaviour
         currentHealth = Mathf.Min(currentHealth + amount, maxHealth);
         Debug.Log($"Player healed for {amount}. Current health: {currentHealth}");
     }
+
+   
+
+  
 }
