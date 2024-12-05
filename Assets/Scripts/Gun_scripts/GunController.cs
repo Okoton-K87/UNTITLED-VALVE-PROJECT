@@ -38,22 +38,30 @@ public class GunController : MonoBehaviour
     {
         HandleMessageTimer();
 
-        if (InventoryManager.Instance.InventoryContains("M1A1"))
+        // Check if M1A1 is in the inventory
+        if (!InventoryManager.Instance.InventoryContains("M1A1"))
         {
-            if (!isUsingGun)
+            if (isUsingGun)
             {
-                gunMessage.text = "Press 1 to use the Gun.";
-                gunMessage.gameObject.SetActive(true);
+                Debug.Log("No M1A1 in inventory. Disabling gun.");
+                ToggleGun(false); // Disable the gun if the player no longer has it
             }
 
-            if (Input.GetKeyDown(KeyCode.Alpha1) && !isReloading)
-            {
-                ToggleGun();
-            }
-        }
-        else
-        {
             gunMessage.gameObject.SetActive(false);
+            return; // Exit early since no M1A1 is in inventory
+        }
+
+        // Show "Press 1 to use the Gun" message if gun is not active
+        if (!isUsingGun)
+        {
+            gunMessage.text = "Press 1 to use the Gun.";
+            gunMessage.gameObject.SetActive(true);
+        }
+
+        // Handle toggling the gun
+        if (Input.GetKeyDown(KeyCode.Alpha1) && !isReloading)
+        {
+            ToggleGun(!isUsingGun);
         }
 
         if (isUsingGun)
@@ -64,15 +72,20 @@ public class GunController : MonoBehaviour
         }
     }
 
-    private void ToggleGun()
+    private void ToggleGun(bool enableGun)
     {
-        isUsingGun = !isUsingGun;
+        isUsingGun = enableGun;
         hipFireGun.SetActive(isUsingGun && !isAiming);
         adsGun.SetActive(isUsingGun && isAiming);
 
-        if (isUsingGun)
+        if (!isUsingGun)
         {
-            gunMessage.gameObject.SetActive(false); // Hide the message when the gun is active
+            gunMessage.text = "Press 1 to use the Gun.";
+            gunMessage.gameObject.SetActive(true);
+        }
+        else
+        {
+            gunMessage.gameObject.SetActive(false);
         }
     }
 
