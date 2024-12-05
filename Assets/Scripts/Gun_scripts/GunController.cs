@@ -134,12 +134,28 @@ public class GunController : MonoBehaviour
 
     private void Shoot()
     {
+        // Play muzzle flash effects
         muzzleFlash_HIP.Play();
         muzzleFlash_ADS.Play();
+
+        // Enable the point light temporarily
+        var hipLight = muzzleFlash_HIP.transform.GetChild(0).gameObject;
+        if (hipLight != null)
+        {
+            hipLight.SetActive(true);
+            StartCoroutine(DisableLightAfterTime(hipLight, 0.05f)); // Adjust the duration as needed
+        }
+
+        var adsLight = muzzleFlash_ADS.transform.GetChild(0).gameObject;
+        if (adsLight != null)
+        {
+            adsLight.SetActive(true);
+            StartCoroutine(DisableLightAfterTime(adsLight, 0.05f)); // Adjust the duration as needed
+        }
+
         Debug.Log("SHOTS");
         currentAmmo--;
         UpdateAmmoUI();
-        //muzzleFlash.Stop();
 
         if (gunshotsound != null)
         {
@@ -171,6 +187,7 @@ public class GunController : MonoBehaviour
             Debug.DrawLine(firePoint.position, hit.point, Color.red, 0.1f);
         }
     }
+
 
     private void HandleReload()
     {
@@ -234,4 +251,11 @@ public class GunController : MonoBehaviour
             }
         }
     }
+
+    private System.Collections.IEnumerator DisableLightAfterTime(GameObject lightObject, float duration)
+    {
+        yield return new WaitForSeconds(duration);
+        lightObject.SetActive(false);
+    }
+
 }
